@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talking Tom Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: url('background.jpg'); /* Replace with your background image */
+            background-size: cover;
+        }
+        #tomImage {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>This is the Talking Tom Game</h1>
+    <img id="tomImage" src="a.jpg" alt="Talking Tom">
+    <button id="playButton" class="btn-custom">Play Audio</button>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById('tomImage').addEventListener('click', async () => {
+            alert('Recording is starting now');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+
+            mediaRecorder.addEventListener('dataavailable', event => {
+                audioChunks.push(event.data);
+            });
+
+            mediaRecorder.addEventListener('stop', () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+            });
+
+            setTimeout(() => {
+                if (mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+            }, 5000); // Automatically stop recording after 3 seconds
+        });
+
+        document.getElementById('playButton').addEventListener('click', () => {
+            document.getElementById('tomImage').click();
+        });
+    </script>
+</body>
+</html>
